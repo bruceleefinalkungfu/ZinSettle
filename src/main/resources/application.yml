@@ -1,0 +1,7 @@
+---
+server:
+# zinComment
+# On which url and port should your application be accessible
+  port: 8080
+  servlet:
+    context-path: /zinSettleApp

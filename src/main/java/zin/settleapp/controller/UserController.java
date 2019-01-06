@@ -21,7 +21,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import zin.settleapp.bo.Owe;
 import zin.settleapp.bo.User;
+import zin.settleapp.bo.UserFinalTake;
 import zin.settleapp.dao.OweRep;
+import zin.settleapp.dao.UserFinalTakeRepository;
 import zin.settleapp.dao.UserRep;
 
 @RestController
@@ -34,6 +36,9 @@ public class UserController {
 	
 	@Autowired
 	OweRep oweRep;
+	
+	@Autowired
+	UserFinalTakeRepository  finalRep;
 
 	@GetMapping("/users")
 	public List<User> getUsers() {
@@ -68,18 +73,11 @@ public class UserController {
 			user = optional.get();
 		else
 			return user;
-		HashMap<String, Double> oweToMap = new HashMap<>();
-		HashMap<String, Double> toTakeMoneyMap = new HashMap<>();
-		user.setOweToMap(oweToMap);
-		user.setTakeFromMap(toTakeMoneyMap);
-		oweRep.findByUserGettingMoneyId(id).forEach(e -> oweToMap.put(e.getOwedUserId(), e.getShare()));
-		oweRep.findByOwedUserId(id).forEach(e -> toTakeMoneyMap.put(e.getUserGettingMoneyId(), e.getShare()));
-		double toTakeMoneyAmt = 0, owedAmt = 0;
-		for(double d : oweToMap.values()) owedAmt += d;
-		for(double d : toTakeMoneyMap.values()) toTakeMoneyAmt += d;
-		if(owedAmt == toTakeMoneyAmt) {
-		}
+		HashMap<String, Double> takeMoney = new HashMap<>();
+		List<UserFinalTake> finalTakes = finalRep.findByUserTakingMoney(user.userId);
+		if(finalTakes != null)
+			finalTakes.forEach(e -> takeMoney.put(e.getUserGivingMoney(), e.getAmount()));
 		return user;
 	}
-
+	
 }

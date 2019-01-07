@@ -1,5 +1,6 @@
 package zin.settleapp.bo;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -9,31 +10,38 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-@Entity
-@Table
 public class Spend {
-	@Id
+	
 	public String spendId = UUID.randomUUID().toString();
-	@Column
+
 	public double total;
 	
-	@Column
 	public String createdBy;
+
+	public static final int TYPE_AMT = 0;
+	public static final int TYPE_PERCENTAGE = 1;
 	
-	@Transient	
-	List<Owe> owe;
+	public int splitType;
 	
+	public HashMap<String, Double> userWithTheirShare;
+		
+	public int getSplitType() {
+		return splitType;
+	}
+	public void setSplitType(int splitType) {
+		this.splitType = splitType;
+	}
+	public HashMap<String, Double> getUserWithTheirShare() {
+		return userWithTheirShare;
+	}
+	public void setUserWithTheirShare(HashMap<String, Double> userWithTheirShare) {
+		this.userWithTheirShare = userWithTheirShare;
+	}
 	public String getCreatedBy() {
 		return createdBy;
 	}
 	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
-	}
-	public List<Owe> getOwe() {
-		return owe;
-	}
-	public void setOwe(List<Owe> owe) {
-		this.owe = owe;
 	}
 	public String getSpendId() {
 		return spendId;

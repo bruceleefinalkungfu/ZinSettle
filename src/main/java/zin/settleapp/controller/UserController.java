@@ -66,6 +66,10 @@ public class UserController {
 		return new ResponseEntity<>(user, HttpStatus.OK);
 	}
 	
+	public void deleteALl() {
+		repository.deleteAll();
+	}
+	
 	public User processUser(String id, Set<String> ids) {
 		Optional<User> optional = repository.findById(id);
 		User user = null;
@@ -77,6 +81,7 @@ public class UserController {
 		List<UserFinalTake> finalTakes = finalRep.findByUserTakingMoney(user.userId);
 		if(finalTakes != null)
 			finalTakes.forEach(e -> takeMoney.put(e.getUserGivingMoney(), e.getAmount()));
+		user.setTakeFromMap(takeMoney);
 		return user;
 	}
 	

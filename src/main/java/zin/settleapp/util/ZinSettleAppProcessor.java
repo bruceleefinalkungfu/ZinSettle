@@ -2,8 +2,10 @@ package zin.settleapp.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.AbstractMap.SimpleEntry;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,15 +45,15 @@ public class ZinSettleAppProcessor {
 			
 			user.setOweToMap(oweToMap);
 			user.setTakeFromMap(toTakeMoneyMap);
-			oweRep.findByUserGettingMoneyId(id).forEach(e -> { 
-				//oweToMap.put(e.getOwedUserId(), oweToMap.get(e.getOwedUserId())==null ? e.getShare() : oweToMap.get(e.getOwedUserId()) + e.getShare());
+			oweRep.findByOwedUserId(id).forEach(e -> { 
+				oweToMap.put(e.getOwedUserId(), oweToMap.get(e.getOwedUserId())==null ? e.getShare() : oweToMap.get(e.getOwedUserId()) + e.getShare());
 					List<String> idsOweing = keyTakingValueGiving.get(e.getUserGettingMoneyId());
 					if(idsOweing == null) idsOweing = new ArrayList<>(); 
 					idsOweing.add(e.getOwedUserId());
 					keyTakingValueGiving.put(e.getUserGettingMoneyId(), idsOweing);
 			});
-			/*
-			oweRep.findByOwedUserId(id).forEach(e -> toTakeMoneyMap.put(e.getUserGettingMoneyId(), toTakeMoneyMap.get
+			//*
+			oweRep.findByUserGettingMoneyId(id).forEach(e -> toTakeMoneyMap.put(e.getUserGettingMoneyId(), toTakeMoneyMap.get
 					(e.getUserGettingMoneyId())==null ? e.getShare(): toTakeMoneyMap.get(e.getUserGettingMoneyId()) + e.getShare()));
 			//*/
 			double toTakeMoneyAmt = 0, owedAmt = 0;
@@ -65,7 +67,7 @@ public class ZinSettleAppProcessor {
 			double toTakeRemaining = entry.getValue();
 			unmodifiedFinalTakeAmount.put(userId, toTakeRemaining);
 			if (toTakeRemaining > 0) {
-				for(String owedUser : keyTakingValueGiving.get(userId)) {
+				for(String owedUser : getAllUsers(userId, keyTakingValueGiving, userId, new HashSet<>())) {
 					double virtualSalary = finalTakeAmount.get(owedUser);
 					if(virtualSalary < 0) {
 						UserFinalTake userFinalTake = new UserFinalTake();
@@ -95,6 +97,20 @@ public class ZinSettleAppProcessor {
 			}
 		}
 		finalRep.saveAll(userFinalTakes);
+	}
+	
+	private List<String> getAllUsers(String userId, HashMap<String, List<String>> keyTakingValueGiving, String originalUserId, Set<String> output) {
+		List<String> ret = new ArrayList<>();
+		if(keyTakingValueGiving.get(userId) != null)
+		{
+			for(String owedUserDirectly : keyTakingValueGiving.get(userId)) {
+				if( ! output.contains(owedUserDirectly) && !owedUserDirectly.equals(originalUserId)) {
+					output.add(owedUserDirectly);
+					 output.addAll(getAllUsers(owedUserDirectly, keyTakingValueGiving, originalUserId, output));
+				}
+			}
+		}
+		return new ArrayList<>(output);
 	}
 	
 }

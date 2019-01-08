@@ -18,13 +18,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import zin.settleapp.bo.Owe;
 import zin.settleapp.bo.Spend;
+import zin.settleapp.constants.Const;
 import zin.settleapp.dao.OweRep;
 import zin.settleapp.util.ApplicationContextProvider;
 import zin.settleapp.util.ZinSettleAppProcessor;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = Const.ALLOW_CROSS_ORIGIN_URL)
 public class SpendController {
 
 	@Autowired

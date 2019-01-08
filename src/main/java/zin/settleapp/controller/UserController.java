@@ -22,13 +22,14 @@ import org.springframework.web.bind.annotation.RestController;
 import zin.settleapp.bo.Owe;
 import zin.settleapp.bo.User;
 import zin.settleapp.bo.UserFinalTake;
+import zin.settleapp.constants.Const;
 import zin.settleapp.dao.OweRep;
 import zin.settleapp.dao.UserFinalTakeRepository;
 import zin.settleapp.dao.UserRep;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = Const.ALLOW_CROSS_ORIGIN_URL)
 public class UserController {
 
 	@Autowired
